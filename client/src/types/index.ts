@@ -1,0 +1,5 @@
+export * from './Developer'
+export * from './Game'
+export * from './Platform'
+export * from './Publisher'
+export * from './Gop'

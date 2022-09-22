@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+    db:
+        build: ./db
+        container_name: db_cont
+        environment:
+            - POSTGRES_PASSWORD=password
+    
+    api:
+        build: ./backend
+        container_name: dotnet_cont
+        ports:
+            - '7000:7000'
+            - '7001:7001'
+        environment:
+            - ASPNETCORE_HTTP_PORT=https://+:7001
+            - ASPNETCORE_URLS=http://+:7000
+        depends_on:
+            - db
+    
+    client:
+        build: ./client
+        container_name: react_cont
+        ports:
+            - '3000:3000'
+        stdin_open: true
+        tty: true
+        depends_on:
+            - api
+            - db

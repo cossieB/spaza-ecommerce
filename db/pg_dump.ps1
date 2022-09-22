@@ -1,0 +1,1 @@
+pg_dump -C --inserts -U postgres -f .\docker-entrypoint-initdb.d\dump.sql marketplace

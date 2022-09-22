@@ -1,0 +1,21 @@
+@import "~bootstrap/scss/bootstrap";
+
+body {
+    font-family: 'Nunito', sans-serif;
+    @extend .bg-secondary;
+}
+
+h1 {
+    font-family: 'Press Start 2P', cursive;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+        monospace;
+}
+
+iframe {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+}
