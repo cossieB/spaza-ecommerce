@@ -12,5 +12,5 @@
 1. Clone this repo and ```cd``` into the folder
 1. Open psql and use the \i command to run the SQL script in ```db/docker-entrypoint-initdb.d/dump.sql```
 1.  ```cd``` into the backend folder and run ```dotnet run```
-1. ```cd``` into the client folder and run ```npm start```
+1. ```cd``` into the client folder and run ```npm install``` then ```npm start```
 1. Open ```http://localhost:3000``` in your browser
