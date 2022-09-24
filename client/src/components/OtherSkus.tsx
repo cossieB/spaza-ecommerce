@@ -31,7 +31,7 @@ export default function ({ platformIdToExclude }: P) {
                     else return -1
                 }).
                 map(item => (
-                    <div className="bg-light rounded mb-1 d-flex align-items-center px-3 btn" 
+                    <div key={item.sku} className="bg-light rounded mb-1 d-flex align-items-center px-3 btn" 
                     style={{height: '4rem'}} 
                     onClick={() => {
                         setQuery(`sku=${item.sku}`)

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import Loader from "../components/Loader";
 import SearchSettings from "../components/SearchSettings";
 import Tile from "../components/Tile";
 import { apiUrl } from "../globalVariables";
 import { Game, Gop, Platform } from "../types";
-import useFetch from "../utils/useFetch";
 
 type ApiData = {
     platform: Platform
@@ -13,8 +13,8 @@ type ApiData = {
 }
 
 export default function Search() {
-    const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState<ApiData[]>([])
+    const [loading, setLoading] = useState(true);
     const [params] = useSearchParams("s");
     const query = params.get("s")
     useEffect(() => {
@@ -22,28 +22,32 @@ export default function Search() {
             const response = await fetch(`${apiUrl}/search?s=${query}`)
             const info = await response.json();
             setData(info)
+            setLoading(false);
         })()
-    }, [params])
+    }, [query])
     return (
-        <div className="container bg-info">
+        <div className="container">
             <SearchSettings setData={setData} />
-            <div className="flex-row d-flex flex-wrap" >
-                {data.map(item =>
-                    <Tile
-                        key={item.gop.sku}
-                        img={item.game.cover}
-                        link={`/games/${item.game.gameId}/?sku=${item.gop.sku}`}
-                        label={item.game.title}
-                        details={item.game.summary}
-                        logo={item.platform.logo}
-                        price={item.gop.price}
-                        discount={item.gop.discount}
-                        quantity={item.gop.quantity}
-                        sku={item.gop.sku}
-                    />
-                )}
-                {data.length == 0 && <div className="fs-7-text">Nothing to see here...</div>  }
-            </div>
-        </div>
+            <Loader isLoading={loading}  >
+
+                <div className="flex-row d-flex flex-wrap" >
+                    {data.map(item =>
+                        <Tile
+                            key={item.gop.sku}
+                            img={item.game.cover}
+                            link={`/games/${item.game.gameId}/?sku=${item.gop.sku}`}
+                            label={item.game.title}
+                            details={item.game.summary}
+                            logo={item.platform.logo}
+                            price={item.gop.price}
+                            discount={item.gop.discount}
+                            quantity={item.gop.quantity}
+                            sku={item.gop.sku}
+                        />
+                    )}
+                    {data.length == 0 && <div className="fs-1 text bg-danger">Nothing to see here...</div>}
+                </div>
+            </Loader>
+        </div >
     )
 }

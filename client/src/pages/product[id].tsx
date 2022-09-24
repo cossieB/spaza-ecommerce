@@ -49,7 +49,7 @@ export default function ProductPage() {
     }
 
     return (
-        <div className="container shadow-lg bg-info" >
+        <div className="container shadow-lg" >
             {error >= 500 ? ServerError : error >= 400 ? NotFound :
                 <Loader isLoading={loading} >
                     <>

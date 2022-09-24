@@ -16,7 +16,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const response = useFetch<Data[]>(`${apiUrl}/products?limit=12`, setLoading)
     return (
-        <div className="container shadow-lg bg-info" >
+        <div className="container shadow-lg" >
             <h1>Spaza Game Store</h1>
             <h2> Games </h2>
             <Loader isLoading={loading}>

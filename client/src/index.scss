@@ -2,7 +2,8 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    @extend .bg-secondary;
+    background-color: $cyan-200;
+    min-height: 100vh;
 }
 
 h1 {
@@ -18,4 +19,9 @@ iframe {
     width: 100%;
     height: auto;
     aspect-ratio: 16/9;
+}
+.container {
+    min-height: calc(100vh - 56px);
+    background-color: $cyan-800;
+    color: $white;
 }
