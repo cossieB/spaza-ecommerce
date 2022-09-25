@@ -17,8 +17,8 @@ public partial class DataContext : DbContext {
     public virtual DbSet<Game> Games { get; set; } = null!;
     public virtual DbSet<GamesOnPlatform> GamesOnPlatforms { get; set; } = null!;
     public virtual DbSet<Platform> Platforms { get; set; } = null!;
-
     public virtual DbSet<Publisher> Publishers { get; set; } = null!;
+    public virtual DbSet<User> Users { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
         if (!optionsBuilder.IsConfigured) {
@@ -207,6 +207,10 @@ public partial class DataContext : DbContext {
                 .HasColumnName("name");
 
             entity.Property(e => e.Summary).HasColumnName("summary");
+        });
+        modelBuilder.Entity<User>(entity => {
+            entity.ToTable("User");
+            entity.Property(e => e.UserId).HasColumnName("userId").HasDefaultValue("gen_random_uuid()");
         });
 
         OnModelCreatingPartial(modelBuilder);

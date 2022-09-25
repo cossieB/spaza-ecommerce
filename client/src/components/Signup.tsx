@@ -1,11 +1,12 @@
 import React, { useReducer } from "react"
 import { signupReducer } from "../contexts/reducers/signupReducer"
 import { apiUrl } from "../globalVariables"
+import { Game } from "../types"
 import sendData from "../utils/sendData"
 import FormInputString from "./AuthInput"
 
 const initialState = {
-    username: "",
+    displayName: "",
     password: "",
     confirmPassword: "",
     email: "",
@@ -17,31 +18,41 @@ export type SignupState = typeof initialState
 export default function Signup() {
     const [state, dispatch] = useReducer(signupReducer, initialState)
     
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        if (! validate())  return;
-
-        const response = await sendData(`${apiUrl}/auth/register`, 'GET', state)
-        
-    }
-    function validate() {
+        dispatch({type: 'CLEAR_ERROR'})
+        let shouldSend = true;
         if (state.password != state.confirmPassword) {
             dispatch({type:'ERROR', payload: 'Passwords do not match'})
+            shouldSend = false;
         }
-        let rgx = /$[a-z][A-Z]/
-        if (state.username.length < 3 || state.username.length > 12) {
-            dispatch({type: 'ERROR', payload: 'Username must be between 3 and 12 characters'})
+        
+        if (state.displayName.length < 3 || state.displayName.length > 20) {
+            dispatch({type: 'ERROR', payload: 'Display name must be between 3 and 20 characters'})
+            shouldSend = false;
         }
-        if (/\W/.test(state.username)) {
-            dispatch({type: 'ERROR', payload: 'Username can only contain numbers, letters and underscores'})
+        // const arr = [/\d+/, /[a-z_]+/, /[A-Z]+/, /\W/]
+        // const test = arr.some(rgx => !rgx.test(state.password))
+        // if (test) {
+        //     dispatch({type: 'ERROR', payload: 'password must be at least 8 characters, contain at least one lowercase, uppercase letter and a symbol.'})
+        //     shouldSend = false;
+        // }
+
+        if (shouldSend) return send()
+
+    }
+    async function send() {
+        const response = await sendData<Game>(`${apiUrl}/auth/register`, 'POST', state)
+        if ('errors' in response) {
+            response.errors.forEach(error => dispatch({type: 'ERROR', payload: error}))
         }
-        return state.errors.length == 0
+        
     }
     return (
         <form action="" onSubmit={handleSubmit}>
             <FormInputString
-                value={state.username}
-                name="username"
+                value={state.displayName}
+                name="displayName"
                 dispatch={dispatch}
             />
             <FormInputString
