@@ -1,5 +1,5 @@
 import React, { useReducer } from "react"
-import { signupReducer } from "../contexts/reducers/signupReducer"
+import { authReducer } from "../contexts/reducers/authReducer"
 import { apiUrl } from "../globalVariables"
 import { Game } from "../types"
 import sendData from "../utils/sendData"
@@ -16,7 +16,7 @@ const initialState = {
 export type SignupState = typeof initialState
 
 export default function Signup() {
-    const [state, dispatch] = useReducer(signupReducer, initialState)
+    const [state, dispatch] = useReducer(authReducer<SignupState>, initialState)
     
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -33,23 +33,27 @@ export default function Signup() {
         }
         // const arr = [/\d+/, /[a-z_]+/, /[A-Z]+/, /\W/]
         // const test = arr.some(rgx => !rgx.test(state.password))
-        // if (test) {
-        //     dispatch({type: 'ERROR', payload: 'password must be at least 8 characters, contain at least one lowercase, uppercase letter and a symbol.'})
-        //     shouldSend = false;
-        // }
+        if (state.password.length < 8) {
+            dispatch({type: 'ERROR', payload: 'Password must be at least 8 characters'})
+            shouldSend = false;
+        }
 
         if (shouldSend) return send()
 
     }
     async function send() {
-        const response = await sendData<Game>(`${apiUrl}/auth/register`, 'POST', state)
+        const response = await sendData<{id: string}>(`${apiUrl}/auth/register`, 'POST', state)
         if ('errors' in response) {
             response.errors.forEach(error => dispatch({type: 'ERROR', payload: error}))
+            return;
+        }
+        else {
+            
         }
         
     }
     return (
-        <form action="" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}>
             <FormInputString
                 value={state.displayName}
                 name="displayName"

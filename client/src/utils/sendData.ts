@@ -2,7 +2,7 @@ import {ApiError} from "../types";
 
 type Methods = "GET" | "POST" | "PUT" | "DELETE"
 export default async function <T = any>(url: string, method?: "GET"): Promise<T | ApiError>;
-export default async function <T = any>(url: string, method: Exclude<Methods, "GET"> , body?: { [key: string]: any }): Promise<T | ApiError>;
+export default async function <T = any>(url: string, method: Exclude<Methods, "GET"> , body: { [key: string]: any }): Promise<T | ApiError>;
 export default async function <T = any>(url: string, method?: Methods, body?: { [key: string]: any }) {
     
     method = method || "GET";

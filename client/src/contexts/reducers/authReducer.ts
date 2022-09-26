@@ -1,7 +1,5 @@
 import { SignupState } from "../../components/Signup"
 
-
-
 interface LoginState {
     email: string
     password: string
@@ -9,10 +7,10 @@ interface LoginState {
     isLoading: boolean
 }
 
-export type SignupAction = {
+export type FormAction<T extends {errors: string[]}> = {
     type: 'UPDATE_STRING'
     payload: {
-        name: Exclude<(keyof SignupState), 'errorMsg'>,
+        name: keyof T,
         value: string
     }
 } | {
@@ -22,7 +20,7 @@ export type SignupAction = {
     type: 'CLEAR_ERROR'
 }
 
-export function signupReducer(state: SignupState, action: SignupAction): SignupState {
+export function authReducer<T extends {errors: string[]}>(state: T, action: FormAction<T>): T {
     switch (action.type) {
         case 'UPDATE_STRING':
             return {...state, [action.payload.name]: action.payload.value, errors: []}

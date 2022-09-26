@@ -210,7 +210,7 @@ public partial class DataContext : DbContext {
         });
         modelBuilder.Entity<User>(entity => {
             entity.ToTable("User");
-            entity.Property(e => e.UserId).HasColumnName("userId").HasDefaultValue("gen_random_uuid()");
+            entity.Property(e => e.UserId).HasColumnName("userId").HasDefaultValueSql("gen_random_uuid()");
         });
 
         OnModelCreatingPartial(modelBuilder);

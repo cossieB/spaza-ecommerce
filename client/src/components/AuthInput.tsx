@@ -1,16 +1,17 @@
 import { Dispatch } from "react"
-import { SignupAction } from "../contexts/reducers/signupReducer"
+import { FormAction } from "../contexts/reducers/authReducer"
 import titleCase from "../utils/titleCase"
+import { LoginState } from "./Login"
 import { SignupState } from "./Signup"
 
-interface P {
-    name: Exclude<keyof SignupState, 'errorMsg'>,
+interface Props<T extends {errors: string[]}>  {
+    name: (keyof T) & string,
     value: string,
     title?: string,
-    dispatch: Dispatch<SignupAction>
+    dispatch: Dispatch<FormAction<T>>
 }
 
-export default function FormInputString(props: P) {
+export default function FormInputString<T extends {errors: string[]} >(props: Props<T>) {
     const { name, dispatch, value } = props;
     const title = props.title || titleCase(name)
 
