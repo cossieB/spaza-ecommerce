@@ -3,7 +3,7 @@ interface P {
     children: JSX.Element
 }
 
-export default function Loader({ isLoading, children }: P) {
+export function Loader({ isLoading, children }: P) {
     return (
         isLoading ? 
             <div className="d-flex justify-content-center">

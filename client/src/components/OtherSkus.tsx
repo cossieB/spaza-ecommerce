@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { apiUrl } from "../globalVariables";
+import { useFetch } from "../hooks";
 import { Platform } from "../types";
-import useFetch from "../utils/useFetch";
-import Loader from "./Loader";
+import {Loader} from "./";
 
 interface P {
     platformIdToExclude: string
@@ -14,7 +14,7 @@ type Data = {
     sku: string
 }
 
-export default function ({ platformIdToExclude }: P) {
+export function OtherSkus({ platformIdToExclude }: P) {
     const {id: gameId} = useParams()
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(0)

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import ApiError from "./ApiError";
+import ApiError from "../utils/ApiError";
 
 type FetchError = {errors: string[]}
 
-export default function useFetch<T  = any >(
+export function useFetch<T  = any >(
     url: string, 
     setLoading: React.Dispatch<React.SetStateAction<boolean>> ,
     setError?: React.Dispatch<React.SetStateAction<number>>,

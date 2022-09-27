@@ -1,9 +1,8 @@
-import React, { useReducer } from "react"
-import { authReducer } from "../contexts/reducers/authReducer"
+import React, { useContext, useReducer } from "react"
+import { authReducer } from "../reducers/authReducer"
 import { apiUrl } from "../globalVariables"
-import { Game } from "../types"
 import sendData from "../utils/sendData"
-import FormInputString from "./AuthInput"
+import {FormInputString} from "./"
 
 const initialState = {
     displayName: "",
@@ -15,9 +14,8 @@ const initialState = {
 
 export type SignupState = typeof initialState
 
-export default function Signup() {
+export function Signup() {
     const [state, dispatch] = useReducer(authReducer<SignupState>, initialState)
-    
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         dispatch({type: 'CLEAR_ERROR'})

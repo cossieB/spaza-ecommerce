@@ -1,5 +1,5 @@
 import { Dispatch } from "react"
-import { FormAction } from "../contexts/reducers/authReducer"
+import { FormAction } from "../reducers/authReducer"
 import titleCase from "../utils/titleCase"
 import { LoginState } from "./Login"
 import { SignupState } from "./Signup"
@@ -11,7 +11,7 @@ interface Props<T extends {errors: string[]}>  {
     dispatch: Dispatch<FormAction<T>>
 }
 
-export default function FormInputString<T extends {errors: string[]} >(props: Props<T>) {
+export function FormInputString<T extends {errors: string[]} >(props: Props<T>) {
     const { name, dispatch, value } = props;
     const title = props.title || titleCase(name)
 

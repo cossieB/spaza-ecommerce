@@ -65,10 +65,12 @@ public class AuthController : ControllerBase {
             }
         }
         var token = CreateToken(user);
-        return Ok(token);
+        return Ok(new {token});
     }
     [HttpGet("purchase"), Authorize]
-
+    public IActionResult Purchase () {
+        return Ok(new {test = 123});
+    }
     private string CreateToken(User user) {
         List<Claim> claims = new() {
             new Claim(ClaimTypes.Email, user.Email),

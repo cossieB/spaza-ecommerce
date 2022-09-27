@@ -1,8 +1,7 @@
 import { useState } from "react";
-import Login from "../components/Login";
-import Signup from "../components/Signup";
+import { Login, Signup } from "../components";
 
-export default function Auth() {
+export function Auth() {
     const [isLogin, setIsLogin] = useState(false)
     return (
         <div className="container pt-5">

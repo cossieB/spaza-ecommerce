@@ -3,8 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { apiUrl } from "../globalVariables"
 import { Game, Gop, Platform } from "../types";
 import sendData from "../utils/sendData";
-import useFetch from "../utils/useFetch"
-import Loader from "./Loader";
+import { useFetch } from "../hooks";
 
 type ApiData = {
     platform: Platform
@@ -16,7 +15,7 @@ interface P {
     setData: React.Dispatch<React.SetStateAction<ApiData[]>>
 }
 
-export default function ({ setData }: P) {
+export function SearchSettings({ setData }: P) {
     const [_platformsLoading, setPlatformsLoading] = useState(true);
     const [maxPrice, setMaxPrice] = useState(60)
 

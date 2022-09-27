@@ -1,12 +1,3 @@
-import { SignupState } from "../../components/Signup"
-
-interface LoginState {
-    email: string
-    password: string
-    error: string
-    isLoading: boolean
-}
-
 export type FormAction<T extends {errors: string[]}> = {
     type: 'UPDATE_STRING'
     payload: {

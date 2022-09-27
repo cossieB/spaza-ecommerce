@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom"
 import { NotFound, ServerError } from "../components/Errors"
-import Loader from "../components/Loader"
-import OtherSkus from "../components/OtherSkus"
+import {Loader} from "../components"
+import {OtherSkus} from "../components"
 import { Info } from "../components/Tile"
 import { apiUrl } from "../globalVariables"
 import { Game, Platform, Gop, Developer, Publisher } from "../types"
-import useFetch, {getData} from "../utils/useFetch"
+import { getData } from "../hooks";
 
 type Data = {
     game: Game
@@ -16,7 +16,7 @@ type Data = {
     publisher: Publisher
 }
 
-export default function ProductPage() {
+export function ProductPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(0)
     const { id } = useParams()

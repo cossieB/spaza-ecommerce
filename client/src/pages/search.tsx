@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Loader from "../components/Loader";
-import SearchSettings from "../components/SearchSettings";
+import {Loader} from "../components";
+import {SearchSettings} from "../components";
 import Tile from "../components/Tile";
 import { apiUrl } from "../globalVariables";
 import { Game, Gop, Platform } from "../types";
@@ -12,7 +12,7 @@ type ApiData = {
     game: Game
 }
 
-export default function Search() {
+export function Search() {
     const [data, setData] = useState<ApiData[]>([])
     const [loading, setLoading] = useState(true);
     const [params] = useSearchParams("s");

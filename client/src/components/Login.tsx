@@ -1,8 +1,9 @@
-import React, { useReducer } from "react";
-import { authReducer } from "../contexts/reducers/authReducer";
+import React, { useContext, useReducer } from "react";
+import { authReducer } from "../reducers/authReducer";
 import { apiUrl } from "../globalVariables";
 import sendData from "../utils/sendData";
-import FormInputString from "./AuthInput";
+import { FormInputString } from ".";
+
 
 const initialState = {
     email: "",
@@ -12,9 +13,9 @@ const initialState = {
 
 export type LoginState = typeof initialState;
 
-export default function Login() {
+export function Login() {
     const [state, dispatch] = useReducer(authReducer<LoginState>, initialState)
-
+    
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         const response = await sendData<{ id: string }>(`${apiUrl}/auth/login`, 'POST', state)

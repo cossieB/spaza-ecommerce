@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
-import Loader from "../components/Loader";
+import {Loader} from "../components";
 import Tile from "../components/Tile"
 import { apiUrl } from "../globalVariables";
+import { useFetch } from "../hooks";
 import { Game, Gop } from "../types";
 import { Platform } from "../types/Platform";
-import useFetch from "../utils/useFetch"
 
 type Data = {
     game: Game
@@ -12,7 +12,7 @@ type Data = {
     gop: Gop
 }
 
-export default function Home() {
+export function Home() {
     const [loading, setLoading] = useState(true);
     const response = useFetch<Data[]>(`${apiUrl}/products?limit=12`, setLoading)
     return (
