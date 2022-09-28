@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { Link } from "react-router-dom"
 import { UserContext } from "../types"
+import { CartContext } from "./CartContextProvider"
 
 interface P {
     img: string
@@ -19,6 +20,7 @@ export default function Tile(props: P) {
     const temp = (1 - discount / 100) * basePrice
     const price = (Math.round(temp * 100) / 100).toFixed(2);
     const { user } = useContext(UserContext)!
+    const {cart, cartDispatch} = useContext(CartContext)!
     return (
         <div className="card card-dark mb-3 mx-1 text-bg-secondary shadow" style={{ flex: 1, minWidth: '18rem' }} >
             <img src={img} className="card-img-top h-75" alt={`${label}`} />
@@ -48,7 +50,15 @@ export default function Tile(props: P) {
                     <span>Details</span>
                 </Link>
                 {user ?
-                    <button className="btn btn-success">
+                    <button className="btn btn-success"
+                        onClick={() => {
+                            cartDispatch({type: 'INCREMENT_ITEM', payload: {
+                                image: img,
+                                price: Number(price),
+                                sku
+                            }})
+                        }}
+                    >
                         <i className="bi bi-cart-plus"></i>
                         <span>
                             &nbsp; Add to cart
