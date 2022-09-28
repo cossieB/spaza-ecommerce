@@ -3,6 +3,7 @@ import { authReducer } from "../reducers/authReducer"
 import { apiUrl } from "../globalVariables"
 import sendData from "../utils/sendData"
 import {FormInputString} from "./"
+import { User, UserContext } from "../types"
 
 const initialState = {
     displayName: "",
@@ -15,7 +16,8 @@ const initialState = {
 export type SignupState = typeof initialState
 
 export function Signup() {
-    const [state, dispatch] = useReducer(authReducer<SignupState>, initialState)
+    const [state, dispatch] = useReducer(authReducer<SignupState>, initialState);
+    const {user, setUser} = useContext(UserContext)!
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
         dispatch({type: 'CLEAR_ERROR'})
@@ -40,13 +42,13 @@ export function Signup() {
 
     }
     async function send() {
-        const response = await sendData<{id: string}>(`${apiUrl}/auth/register`, 'POST', state)
+        const response = await sendData<User>(`${apiUrl}/auth/register`, 'POST', state)
         if ('errors' in response) {
-            response.errors.forEach(error => dispatch({type: 'ERROR', payload: error}))
-            return;
+            response.errors.forEach(error => dispatch({ type: 'ERROR', payload: error }))
         }
         else {
-            
+            setUser(response)
+            sessionStorage.setItem('user', JSON.stringify(response))
         }
         
     }

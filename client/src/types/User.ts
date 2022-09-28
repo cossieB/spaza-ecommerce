@@ -2,7 +2,8 @@ import React, { createContext, SetStateAction } from "react"
 
 export type User = {
     displayName: string,
-    email: string
+    email: string,
+    token: string
 }
 
 type UserContextType = {

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { Game } from "../types";
+import { Game, UserContext } from "../types";
 import { Searchbar, SearchedGames } from "./";
 
-export  function Nav() { 
+export function Nav() {
     const [games, setGames] = useState<Game[]>([])
-
+    const { user, setUser } = useContext(UserContext)!
     return (
         <>
             <nav className="navbar navbar-dark navbar-expand-lg bg-dark position-sticky">
@@ -33,15 +33,34 @@ export  function Nav() {
                                     <li><a className="dropdown-item" href="http://cossie-91.web.app" rel="noreferrer" target="_blank" >About Me</a></li>
                                 </ul>
                             </li>
-                            <li className="nav-item">
-                                <Link to={'/auth'} className="nav-link">Login</Link>
-                            </li>
+                            {user ?
+                                <li className="nav-item dropdown" >
+                                    <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">{user.displayName}</a>
+                                    <ul className="dropdown-menu">
+                                        <li><Link className="dropdown-item" to={''}>My Cart</Link></li>
+                                        <li><Link className="dropdown-item" to={''}>Checkout</Link></li>
+                                        <li><hr className="dropdown-divider" /></li>
+                                        <li>
+                                            <div className="btn btn-danger"
+                                            onClick={() => {
+                                                setUser(null);
+                                                sessionStorage.clear();
+                                            }}>
+                                                Logout
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </li> :
+                                <li className="nav-item">
+                                    <Link to={'/auth'} className="nav-link">Login</Link> 
+                                </li>
+                            }
                         </ul>
                         <Searchbar setGames={setGames} />
                     </div>
                 </div>
             </nav>
-            <SearchedGames games={games} setGames={setGames} />  
+            <SearchedGames games={games} setGames={setGames} />
         </>
     )
 }

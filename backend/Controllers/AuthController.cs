@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
+using BC = BCrypt.Net.BCrypt;
 namespace backend.Controllers;
 
 [ApiController]
@@ -34,10 +34,11 @@ public class AuthController : ControllerBase {
         if (request.displayName.Length < 3 || request.displayName.Length > 20) {
             errors.errors.Add("Username must be between 3 and 20 characters");
         }
-        if (this.db.Users.FirstOrDefaultAsync(u => u.Email == request.email) != null) {
+        if (await this.db.Users.FirstOrDefaultAsync(u => u.Email == request.email) != null) {
             errors.errors.Add("That email has already been taken");
         }
         if (errors.errors.Count > 0) return BadRequest(errors);
+
         CreatePasswordHash(request.password, out byte[] hash, out byte[] salt);
 
         var user = new User();
@@ -45,15 +46,18 @@ public class AuthController : ControllerBase {
         user.PasswordSalt = salt;
         user.Email = request.email;
         user.DisplayName = request.displayName;
+        
         var trackedItem = this.db.Users.Add(user);
         await this.db.SaveChangesAsync();
         var id = trackedItem.Property(t => t.UserId).CurrentValue;
-        return Ok(new { id });
+        var token = CreateToken(user);
+        
+        return Ok(new { token, displayName = user.DisplayName, email = user.Email });
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login(UserDto request) {
-
+        var hash = BC.HashPassword(request.password, 10);
         var user = await this.db.Users.FirstOrDefaultAsync(u => u.Email == request.email);
         if (user == null) {
             return BadRequest(new Error("Invalid credentials"));
@@ -65,11 +69,12 @@ public class AuthController : ControllerBase {
             }
         }
         var token = CreateToken(user);
-        return Ok(new {token});
+        return Ok(new { token, displayName = user.DisplayName, email = user.Email });
     }
+    
     [HttpGet("purchase"), Authorize]
-    public IActionResult Purchase () {
-        return Ok(new {test = 123});
+    public IActionResult Purchase() {
+        return Ok(new { test = 123 });
     }
     private string CreateToken(User user) {
         List<Claim> claims = new() {
@@ -80,7 +85,7 @@ public class AuthController : ControllerBase {
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddSeconds(30),
+            expires: DateTime.Now.AddSeconds(5),
             signingCredentials: credentials
         );
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);

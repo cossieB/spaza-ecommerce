@@ -3,7 +3,7 @@ import { authReducer } from "../reducers/authReducer";
 import { apiUrl } from "../globalVariables";
 import sendData from "../utils/sendData";
 import { FormInputString } from ".";
-
+import { User, UserContext } from "../types";
 
 const initialState = {
     email: "",
@@ -14,17 +14,20 @@ const initialState = {
 export type LoginState = typeof initialState;
 
 export function Login() {
+
     const [state, dispatch] = useReducer(authReducer<LoginState>, initialState)
-    
+    const {user, setUser} = useContext(UserContext)!
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()
-        const response = await sendData<{ id: string }>(`${apiUrl}/auth/login`, 'POST', state)
+        
+        const response = await sendData<User>(`${apiUrl}/auth/login`, 'POST', state)
 
         if ('errors' in response) {
             response.errors.forEach(error => dispatch({ type: 'ERROR', payload: error }))
         }
         else {
-
+            setUser(response)
+            sessionStorage.setItem('user', JSON.stringify(response))
         }
     }
     return (
