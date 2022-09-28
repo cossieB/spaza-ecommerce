@@ -8,7 +8,7 @@ export function Nav() {
     const { user, setUser } = useContext(UserContext)!
     return (
         <>
-            <nav className="navbar navbar-dark navbar-expand-lg bg-dark position-sticky">
+            <nav className="navbar navbar-dark navbar-expand-lg bg-dark position-sticky" style={{zIndex: 99}}>
                 <div className="container-fluid">
                     <Link className="navbar-brand" to={''}><i className="bi bi-joystick"></i></Link>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ export function Nav() {
                             {user ?
                                 <li className="nav-item dropdown" >
                                     <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">{user.displayName}</a>
-                                    <ul className="dropdown-menu">
+                                    <ul className="dropdown-menu" style={{zIndex: 99}}>
                                         <li><Link className="dropdown-item" to={''}>My Cart</Link></li>
                                         <li><Link className="dropdown-item" to={''}>Checkout</Link></li>
                                         <li><hr className="dropdown-divider" /></li>
