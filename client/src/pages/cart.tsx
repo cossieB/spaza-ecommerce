@@ -24,7 +24,7 @@ export function Cart() {
                                     {item.game}
                                 </td>
                                 <td>
-                                    {item.price}
+                                    {item.price.toFixed(2)}
                                 </td>
                                 <td>
                                     {item.quantity}

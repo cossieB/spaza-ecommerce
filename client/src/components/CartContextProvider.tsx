@@ -12,7 +12,8 @@ export type CartItem = {
 const initialState = {
     items: [] as CartItem[],
     total() {
-        return this.items.reduce((prev, a) => prev + a.quantity * a.price , 0).toFixed(2)
+        const num = this.items.reduce((prev, a) => prev + a.quantity * a.price , 0)
+        return (Math.round(num * 100) / 100).toFixed(2)
     } 
 }
 

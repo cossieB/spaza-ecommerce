@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { apiUrl } from "../globalVariables"
 import { Game, Gop, Platform } from "../types";
@@ -21,6 +21,10 @@ export function SearchSettings({ setData }: P) {
 
     const [searchParams] = useSearchParams()
     const s = searchParams.get('s')
+    let searhValue = "";
+    useEffect(() => {
+        (document.getElementById("searchName") as HTMLInputElement).value = s || ""
+    }, [s])
     const platforms = useFetch<Platform[]>(`${apiUrl}/platforms`, setPlatformsLoading)
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
