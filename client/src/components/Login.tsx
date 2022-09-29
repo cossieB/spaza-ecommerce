@@ -27,7 +27,7 @@ export function Login() {
         }
         else {
             setUser(response)
-            sessionStorage.setItem('user', JSON.stringify(response))
+            localStorage.setItem('user', JSON.stringify(response))
         }
     }
     return (

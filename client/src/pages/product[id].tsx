@@ -68,6 +68,9 @@ export function ProductPage() {
                                     price={data?.gop.price || 0}
                                     quantity={data?.gop.quantity || 0}
                                     logo={data?.platform.logo || ""}
+                                    sku={sku || ""}
+                                    img={data?.game.cover || ""}
+                                    label={data?.game.title || ""}
                                 />
                             </div>
 

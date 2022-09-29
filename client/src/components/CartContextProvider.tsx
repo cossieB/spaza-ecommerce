@@ -1,15 +1,19 @@
 import React, { createContext, useReducer } from "react"
 import { CartAction, cartReducer } from "../reducers/cartReducer"
 
-type Skus = {
+export type CartItem = {
     sku: string,
     quantity: number,
-    price: number
+    price: number,
+    image: string,
+    game: string
 }
 
 const initialState = {
-    items: [] as Skus[],
-    total: 0
+    items: [] as CartItem[],
+    total() {
+        return this.items.reduce((prev, a) => prev + a.quantity * a.price , 0).toFixed(2)
+    } 
 }
 
 export type CartState = typeof initialState

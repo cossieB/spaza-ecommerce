@@ -1,12 +1,16 @@
 import './App.scss';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { User, UserContext } from './types';
 import { CartContextProvider, Nav } from './components';
-import { Home, Auth, ProductPage, Search } from './pages';
+import { Home, Auth, ProductPage, Search, Cart } from './pages';
 
 function App() {
     const [user, setUser] = useState<User | null>(null)
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user')
+        storedUser && setUser(JSON.parse(storedUser))
+    }, [])
     return (
         <UserContext.Provider value={{ user, setUser }} >
             <CartContextProvider>
@@ -19,6 +23,7 @@ function App() {
                         </Route>
                         <Route path="/search" element={<Search />} />
                         <Route path='/auth' element={<Auth />} />
+                        <Route path='/cart' element={<Cart />} />
                     </Routes>
                 </BrowserRouter>
             </CartContextProvider>

@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { UserContext } from "../types"
 import { CartContext } from "./CartContextProvider"
 
@@ -20,7 +20,7 @@ export default function Tile(props: P) {
     const temp = (1 - discount / 100) * basePrice
     const price = (Math.round(temp * 100) / 100).toFixed(2);
     const { user } = useContext(UserContext)!
-    const {cart, cartDispatch} = useContext(CartContext)!
+    const { cart, cartDispatch } = useContext(CartContext)!
     return (
         <div className="card card-dark mb-3 mx-1 text-bg-secondary shadow" style={{ flex: 1, minWidth: '18rem' }} >
             <img src={img} className="card-img-top h-75" alt={`${label}`} />
@@ -52,11 +52,14 @@ export default function Tile(props: P) {
                 {user ?
                     <button className="btn btn-success"
                         onClick={() => {
-                            cartDispatch({type: 'INCREMENT_ITEM', payload: {
-                                image: img,
-                                price: Number(price),
-                                sku
-                            }})
+                            cartDispatch({
+                                type: 'INCREMENT_ITEM', payload: {
+                                    image: img,
+                                    price: Number(price),
+                                    sku,
+                                    game: label
+                                }
+                            })
                         }}
                     >
                         <i className="bi bi-cart-plus"></i>
@@ -77,10 +80,12 @@ export default function Tile(props: P) {
     )
 }
 
-export function Info(props: Pick<P, 'price' | 'discount' | 'quantity' | 'logo'>) {
-    const { price: basePrice, discount, quantity, logo } = props;
+export function Info(props: Pick<P, 'price' | 'discount' | 'quantity' | 'logo' | 'sku' | 'img' | 'label'>) {
+    const { price: basePrice, discount, quantity, logo, sku, img, label } = props;
     const temp = (1 - discount / 100) * basePrice
     const price = (Math.round(temp * 100) / 100).toFixed(2);
+    const { user } = useContext(UserContext)!
+    const { cart, cartDispatch } = useContext(CartContext)!
     return (
         <div className="card card-dark mb-3 mx-1 text-bg-secondary shadow w-100"  >
             <div className="card-body">
@@ -96,12 +101,31 @@ export function Info(props: Pick<P, 'price' | 'discount' | 'quantity' | 'logo'>)
                 {quantity < 6 && <div className="row bg-danger"> Hurry!!! Only {quantity} remaining </div>}
             </div>
             <div className="btn-group mb-2">
-                <button className="btn btn-success">
-                    <i className="bi bi-cart-plus"></i>
-                    <span>
-                        Add to cart
-                    </span>
-                </button>
+                {user ?
+                    <button className="btn btn-success"
+                        onClick={() => {
+                            cartDispatch({
+                                type: 'INCREMENT_ITEM', payload: {
+                                    image: img,
+                                    price: temp,
+                                    sku,
+                                    game: label
+                                }
+                            })
+                        }}
+                    >
+                        <i className="bi bi-cart-plus"></i>
+                        <span>
+                            &nbsp; Add to cart
+                        </span>
+                    </button> :
+                    <Link to={"/auth"} className="btn btn-success">
+                        <i className="bi bi-cart-plus"></i>
+                        <span>
+                            &nbsp; Login
+                        </span>
+                    </Link>
+                }
             </div>
             <div className="rounded mb-2 py-1 bg-light d-flex justify-content-center align-items-center" style={{ height: '2rem' }}>
                 <img className="h-100 w-100" src={logo} alt="" />
