@@ -71,6 +71,7 @@ export function ProductPage() {
                                     sku={sku || ""}
                                     img={data?.game.cover || ""}
                                     label={data?.game.title || ""}
+                                    platform={data?.platform.name || ""}
                                 />
                             </div>
 

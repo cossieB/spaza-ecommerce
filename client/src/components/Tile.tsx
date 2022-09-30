@@ -13,10 +13,11 @@ interface P {
     discount: number
     quantity: number
     sku: string
+    platform: string
 }
 
 export default function Tile(props: P) {
-    const { img, label, link, logo, price: basePrice, discount, quantity, sku, } = props;
+    const { img, label, link, logo, price: basePrice, discount, quantity, sku, platform} = props;
     const temp = (1 - discount / 100) * basePrice
     const price = (Math.round(temp * 100) / 100).toFixed(2);
     const { user } = useContext(UserContext)!
@@ -57,7 +58,8 @@ export default function Tile(props: P) {
                                     image: img,
                                     price: Number(price),
                                     sku,
-                                    game: label
+                                    game: label,
+                                    platform
                                 }
                             })
                         }}
@@ -80,8 +82,8 @@ export default function Tile(props: P) {
     )
 }
 
-export function Info(props: Pick<P, 'price' | 'discount' | 'quantity' | 'logo' | 'sku' | 'img' | 'label'>) {
-    const { price: basePrice, discount, quantity, logo, sku, img, label } = props;
+export function Info(props: Pick<P, 'price' | 'discount' | 'quantity' | 'logo' | 'sku' | 'img' | 'label' | 'platform'>) {
+    const { price: basePrice, discount, quantity, logo, sku, img, label, platform } = props;
     const temp = (1 - discount / 100) * basePrice
     const price = (Math.round(temp * 100) / 100).toFixed(2);
     const { user } = useContext(UserContext)!
@@ -109,7 +111,8 @@ export function Info(props: Pick<P, 'price' | 'discount' | 'quantity' | 'logo' |
                                     image: img,
                                     price: temp,
                                     sku,
-                                    game: label
+                                    game: label,
+                                    platform
                                 }
                             })
                         }}

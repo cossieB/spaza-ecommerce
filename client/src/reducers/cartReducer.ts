@@ -6,7 +6,8 @@ export type CartAction = {
         sku: string,
         image: string,
         price: number,
-        game: string
+        game: string,
+        platform: string
     }
 } | {
     type: 'DECREMENT_ITEM' | 'REMOVE_ITEM',

@@ -35,6 +35,7 @@ export function Home() {
                                     discount={item.gop.discount}
                                     quantity={item.gop.quantity}
                                     sku={item.gop.sku}
+                                    platform={item.platform.name}
                                 />)}
                         </div>
                     )}

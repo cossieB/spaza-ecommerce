@@ -1,9 +1,25 @@
 import { useContext } from "react"
 import { CartContext } from "../components"
+import { apiUrl } from "../globalVariables"
+import { UserContext } from "../types"
+import sendData from "../utils/sendData"
 
 export function Cart() {
     const { cart, cartDispatch } = useContext(CartContext)!
-    
+    const {user} = useContext(UserContext)!
+    async function checkout() {
+        const {total, ...others} = cart;
+        const response = await fetch(`${apiUrl}/auth/purchase`, {
+            method: 'POST',
+            body: JSON.stringify({...others, total: total.apply(cart)}),
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `BEARER ${user!.token}`
+            }
+        })
+        
+        console.log(response)
+    }
     return (
         <div className="container shadow-lg" >
             {cart.items.length == 0 ?
@@ -11,7 +27,8 @@ export function Cart() {
                 <table className="table table-dark">
                     <thead>
                         <tr>
-                            <th className="col-6">Game</th>
+                            <th className="col-3">Game</th>
+                            <th className="col-3">Platform</th>
                             <th className="col-1">Price</th>
                             <th className="col-1">Quantity</th>
                             <th className="col-4"></th>
@@ -22,6 +39,9 @@ export function Cart() {
                             <tr key={item.sku} >
                                 <td>
                                     {item.game}
+                                </td>
+                                <td>
+                                    {item.platform}
                                 </td>
                                 <td>
                                     {item.price.toFixed(2)}
@@ -44,12 +64,13 @@ export function Cart() {
                                 </td>
                             </tr>
                         )}
-                        <tr className="border-top">
+                        <tr className="table-border">
                             <td>Total</td>
+                            <td></td>
                             <td></td>
                             <td>{cart.total()}</td>
                             <td >
-                                <span className="btn btn-success">Checkout</span>
+                                <span onClick={checkout} className="btn btn-success">Checkout</span>
                             </td>
                         </tr>
                     </tbody>

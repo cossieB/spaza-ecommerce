@@ -43,6 +43,7 @@ export function Search() {
                             discount={item.gop.discount}
                             quantity={item.gop.quantity}
                             sku={item.gop.sku}
+                            platform={item.platform.name}
                         />
                     )}
                     {data.length == 0 && <div className="fs-1 text bg-danger">Nothing to see here...</div>}

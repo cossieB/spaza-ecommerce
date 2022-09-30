@@ -17,10 +17,12 @@ namespace backend.Controllers;
 public class AuthController : ControllerBase {
     private readonly DataContext db;
     private readonly IConfiguration config;
+    private readonly IMapper mapper;
 
-    public AuthController(DataContext db, IConfiguration config) {
+    public AuthController(DataContext db, IConfiguration config, IMapper mapper) {
         this.db = db;
         this.config = config;
+        this.mapper = mapper;
     }
 
 
@@ -72,9 +74,43 @@ public class AuthController : ControllerBase {
         return Ok(new { token, displayName = user.DisplayName, email = user.Email });
     }
     
-    [HttpGet("purchase"), Authorize]
-    public IActionResult Purchase() {
-        return Ok(new { test = 123 });
+    [HttpPost("purchase"), Authorize]
+    public async Task<IActionResult> Purchase(Order order) {
+
+        // Query for games
+        var query = from gop in this.db.GamesOnPlatforms
+                    join game in this.db.Games on gop.GameId equals game.GameId
+                    join platform in this.db.Platforms on gop.PlatformId equals platform.PlatformId
+                    select new {gop, game, platform};
+        
+        var skus = order.items.Select(o => o.sku);
+        
+        query = query.Where(item => skus.Contains(item.gop.Sku));   // Filter only for ordered games
+        var result = await query.ToListAsync();                     
+        var array = result.Select(g => {
+            return new {
+                game = this.mapper.Map<GameDTO>(g.game),
+                platform = this.mapper.Map<PlatformDTO>(g.platform),
+                gop = this.mapper.Map<GopDTO>(g.gop),
+            };
+        });
+        // find errors in the order
+        var errors = new OrderError();
+        foreach (var clientSideItem in order.items) {
+            var item = array.FirstOrDefault(x => x.gop.Sku == clientSideItem.sku)!;
+            if (clientSideItem == null) return Ok(new Error("is null"));
+
+            if (item.gop.Price != clientSideItem.price) {
+                errors.AddError(clientSideItem.sku, "Sorry the price of this item has changed. Please refresh your browser");
+            }
+            if (item.gop.Quantity < clientSideItem.quantity) {
+                errors.AddError(clientSideItem.sku, $"Sorry, we only have {item.gop.Quantity} units in stock. Please adjust your order amount");
+            }
+        }
+        if (errors.errorCount > 0) {
+            return BadRequest(errors);
+        }
+        return Ok(array);
     }
     private string CreateToken(User user) {
         List<Claim> claims = new() {
@@ -85,7 +121,7 @@ public class AuthController : ControllerBase {
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddSeconds(5),
+            expires: DateTime.Now.AddDays(15),
             signingCredentials: credentials
         );
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);
