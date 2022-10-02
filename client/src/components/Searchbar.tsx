@@ -24,9 +24,9 @@ export function Searchbar({setGames}: Pick<Props, 'setGames'>) {
         <>
             <form className="d-flex" role="search" onSubmit={e => {
                 e.preventDefault();
+                setGames([]);
                 const { value } = (document.getElementById('searchInput') as HTMLInputElement);
                 if (value == "") return;
-                setGames([]);
                 (document.getElementById('searchInput') as HTMLInputElement).value = ""
                 navigator(`/search?s=${value}`)
             }}>

@@ -99,16 +99,18 @@ public class AuthController : ControllerBase {
         foreach (var clientSideItem in order.items) {
             var item = array.FirstOrDefault(x => x.gop.Sku == clientSideItem.sku)!;
             if (clientSideItem == null) return Ok(new Error("is null"));
-
-            if (item.gop.Price != clientSideItem.price) {
+            
+            var temp = item.gop.Price * (1 - item.gop.Discount / 100);
+            var price = Math.Round(temp, 2);
+            if (item.gop.Price != price) {
                 errors.AddError(clientSideItem.sku, "Sorry the price of this item has changed. Please refresh your browser");
             }
             if (item.gop.Quantity < clientSideItem.quantity) {
-                errors.AddError(clientSideItem.sku, $"Sorry, we only have {item.gop.Quantity} units in stock. Please adjust your order amount");
+                errors.AddError(clientSideItem.sku, $"Sorry, we only have {item.gop.Quantity} {(item.gop.Quantity > 1 ? "units" : "unit")} in stock. Please adjust your order amount");
             }
         }
         if (errors.errorCount > 0) {
-            return BadRequest(errors);
+            return BadRequest(new {errors = errors.errorList});
         }
         return Ok(array);
     }
@@ -121,7 +123,7 @@ public class AuthController : ControllerBase {
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.Now.AddDays(15),
+            expires: DateTime.Now.AddMinutes(15),
             signingCredentials: credentials
         );
         var jwt = new JwtSecurityTokenHandler().WriteToken(token);

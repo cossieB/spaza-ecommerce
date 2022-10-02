@@ -4,6 +4,7 @@ import { apiUrl } from "../globalVariables"
 import sendData from "../utils/sendData"
 import {FormInputString} from "./"
 import { User, UserContext } from "../types"
+import { login } from "../utils/loginout"
 
 const initialState = {
     displayName: "",
@@ -47,8 +48,7 @@ export function Signup() {
             response.errors.forEach(error => dispatch({ type: 'ERROR', payload: error }))
         }
         else {
-            setUser(response)
-            localStorage.setItem('user', JSON.stringify(response))
+            login(setUser, response)
         }
         
     }
