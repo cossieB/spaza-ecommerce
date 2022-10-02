@@ -103,10 +103,10 @@ public class AuthController : ControllerBase {
             var temp = item.gop.Price * (1 - item.gop.Discount / 100);
             var price = Math.Round(temp, 2);
             if (item.gop.Price != price) {
-                errors.AddError(clientSideItem.sku, "Sorry the price of this item has changed. Please refresh your browser");
+                errors.AddError(clientSideItem.sku, $"Sorry the price of {item.game.Title} on {item.platform.Name} has changed. Please refresh your browser");
             }
             if (item.gop.Quantity < clientSideItem.quantity) {
-                errors.AddError(clientSideItem.sku, $"Sorry, we only have {item.gop.Quantity} {(item.gop.Quantity > 1 ? "units" : "unit")} in stock. Please adjust your order amount");
+                errors.AddError(clientSideItem.sku, $"Sorry, we only have {item.gop.Quantity} {(item.gop.Quantity > 1 ? "units" : "unit")} of {item.game.Title} on {item.platform.Name} in stock. Please adjust your order amount");
             }
         }
         if (errors.errorCount > 0) {

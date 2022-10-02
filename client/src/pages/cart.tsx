@@ -13,11 +13,19 @@ type Hover = {
 export function Cart() {
     const { cart, cartDispatch } = useContext(CartContext)!
     const { user, setUser } = useContext(UserContext)!
+    const [errors, setErrors] = useState<string[]>([])
     const [mousedOver, setMousedOver] = useState<Hover>()  
     const navigate = useNavigate()
 
     async function checkout() {
         const { total, ...others } = cart;
+        type ApiRes = {
+            errors: {
+                [sku: string]: string[]
+            }
+        } | {
+
+        }
         const response = await fetch(`${apiUrl}/auth/purchase`, {
             method: 'POST',
             body: JSON.stringify({ ...others, total: total.apply(cart) }),
@@ -29,6 +37,21 @@ export function Cart() {
         if (response.status == 401) {
             logout(setUser)
             navigate("/auth?type=login", {state: {message: "Your session expired please log in again."}})
+        }
+        const data: ApiRes = await response.json()
+
+        if ('errors' in data) {
+            let errs: string[] = []
+            const keys = Object.keys(data.errors)
+            keys.forEach(item => {
+                errs = [...errs, ...data.errors[item]]
+                const elem = document.getElementById(item) as HTMLTableRowElement
+                elem.classList.add("table-danger")
+                setTimeout(() => {
+                    elem.classList.remove("table-danger")
+                }, 5000)
+            })
+            setErrors(errs)
         }
         
     }
@@ -48,10 +71,10 @@ export function Cart() {
                     </thead>
                     <tbody>
                         {cart.items.map(item =>
-                            <tr key={item.sku} id={item.sku + "row"} >
+                            <tr key={item.sku} id={item.sku} >
                                 <td 
                                 onMouseOver={e => setMousedOver({e, img: item.image})}
-                                onMouseOut={e => setMousedOver(undefined)}>
+                                onMouseOut={() => setMousedOver(undefined)}>
                                     {item.game}
                                 </td>
                                 <td>
@@ -67,18 +90,21 @@ export function Cart() {
                                     <div className="btn-group" >
                                         <span className="btn btn-info" onClick={() => {
                                             cartDispatch({ type: 'INCREMENT_ITEM', payload: item })
+                                            setErrors([])
                                         }}>
-                                            <i className="bi bi-cart-plus" />
+                                            <i className="bi bi-arrow-up-circle"></i>
                                         </span>
                                         <span className="btn btn-warning" onClick={() => {
                                             cartDispatch({ type: 'DECREMENT_ITEM', payload: item.sku })
+                                            setErrors([])
                                         }}>
-                                            <i className="bi bi-file-minus" />
+                                            <i className="bi bi-arrow-down-circle"></i>
                                         </span>
                                         <span className="btn btn-danger" onClick={() => {
                                             cartDispatch({ type: 'REMOVE_ITEM', payload: item.sku })
+                                            setErrors([])
                                         }}>
-                                            <i className="bi bi-bag-x" />
+                                            <i className="bi bi-x-circle"></i>
                                         </span>
                                     </div>
                                 </td>
@@ -99,6 +125,9 @@ export function Cart() {
                     </tbody>
                 </table>
             }
+            <div  >
+                {errors.map(err => <p className="bg-danger" key={err}>{err}</p>)}
+            </div>
             {mousedOver && <HoverComponent hover={mousedOver} />}
         </div>
     )
