@@ -76,6 +76,9 @@ public class AuthController : ControllerBase {
     
     [HttpPost("purchase"), Authorize]
     public async Task<IActionResult> Purchase(Order order) {
+        
+        var user = await this.db.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier));
+        if (user == null) return Forbid("User not found");
 
         // Query for games
         var query = from gop in this.db.GamesOnPlatforms
@@ -87,17 +90,11 @@ public class AuthController : ControllerBase {
         
         query = query.Where(item => skus.Contains(item.gop.Sku));   // Filter only for ordered games
         var result = await query.ToListAsync();                     
-        var array = result.Select(g => {
-            return new {
-                game = this.mapper.Map<GameDTO>(g.game),
-                platform = this.mapper.Map<PlatformDTO>(g.platform),
-                gop = this.mapper.Map<GopDTO>(g.gop),
-            };
-        });
+
         // find errors in the order
         var errors = new OrderError();
         foreach (var clientSideItem in order.items) {
-            var item = array.FirstOrDefault(x => x.gop.Sku == clientSideItem.sku)!;
+            var item = result.FirstOrDefault(x => x.gop.Sku == clientSideItem.sku)!;
             if (clientSideItem == null) return Ok(new Error("is null"));
             
             var temp = item.gop.Price * (1 - item.gop.Discount / 100);
@@ -108,11 +105,28 @@ public class AuthController : ControllerBase {
             if (item.gop.Quantity < clientSideItem.quantity) {
                 errors.AddError(clientSideItem.sku, $"Sorry, we only have {item.gop.Quantity} {(item.gop.Quantity > 1 ? "units" : "unit")} of {item.game.Title} on {item.platform.Name} in stock. Please adjust your order amount");
             }
+
+            // track changes in case there are no errors
+            var purchase = new Purchase {
+                PurchaseId = Guid.NewGuid(),
+                UserId = user.UserId,
+                Sku = item.gop.Sku,
+                Price = item.gop.Price,
+                Quantity = item.gop.Quantity,
+                Total = item.gop.Price * item.gop.Quantity
+            };
+            
+            this.db.Purchases.Add(purchase);
+            var gopToUpdate = this.db.GamesOnPlatforms.FirstOrDefault(x => x.Sku == item.gop.Sku);
+            gopToUpdate!.Quantity -= clientSideItem.quantity;
         }
         if (errors.errorCount > 0) {
             return BadRequest(new {errors = errors.errorList});
         }
-        return Ok(array);
+        
+        await this.db.SaveChangesAsync();
+
+        return Ok(new {message = "success"});
     }
     private string CreateToken(User user) {
         List<Claim> claims = new() {

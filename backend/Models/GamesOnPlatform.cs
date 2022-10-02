@@ -14,6 +14,8 @@ public partial class GamesOnPlatform {
     public int Quantity { get; set; }
     public virtual Game Game { get; set; } = null!;
     public virtual Platform Platform { get; set; } = null!;
+    public ICollection<Review> Reviews { get; set; }
+    public ICollection<Purchase> Purchases { get; set; }
 }
 
 public class GopDTO {

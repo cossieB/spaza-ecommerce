@@ -10,6 +10,8 @@ public class User {
     public string DisplayName { get; set; }
     public byte[] PasswordHash { get; set; }
     public byte[] PasswordSalt { get; set; }
+    public ICollection<Review> Reviews {get; set;}
+    public ICollection<Purchase> Purchases {get; set;}
 }
 
 public class UserRegistrationDto {

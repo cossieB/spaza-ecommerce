@@ -19,6 +19,8 @@ public partial class DataContext : DbContext {
     public virtual DbSet<Platform> Platforms { get; set; } = null!;
     public virtual DbSet<Publisher> Publishers { get; set; } = null!;
     public virtual DbSet<User> Users { get; set; } = null!;
+    public virtual DbSet<Purchase> Purchases { get; set; } = null!;
+    public virtual DbSet<Review> Reviews { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
         if (!optionsBuilder.IsConfigured) {
@@ -211,6 +213,12 @@ public partial class DataContext : DbContext {
         modelBuilder.Entity<User>(entity => {
             entity.ToTable("User");
             entity.Property(e => e.UserId).HasColumnName("userId").HasDefaultValueSql("gen_random_uuid()");
+        });
+        modelBuilder.Entity<Review>(entity => {
+            entity.Property(e => e.DateCreated).HasDefaultValueSql("now()");
+        });
+        modelBuilder.Entity<Purchase>(entity => {
+            entity.Property(e => e.Date).HasDefaultValueSql("now()");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using backend.Data;
@@ -11,9 +12,10 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221002130659_add_reviews")]
+    partial class add_reviews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -305,10 +307,8 @@ namespace backend.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
+                    b.Property<Guid>("GopSku")
+                        .HasColumnType("uuid");
 
                     b.Property<double>("Price")
                         .HasColumnType("double precision");
@@ -327,7 +327,7 @@ namespace backend.Migrations
 
                     b.HasKey("PurchaseId");
 
-                    b.HasIndex("Sku");
+                    b.HasIndex("GopSku");
 
                     b.HasIndex("UserId");
 
@@ -343,13 +343,8 @@ namespace backend.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("now()");
-
-                    b.Property<DateTime?>("DateEdited")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<Guid>("GopSku")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
@@ -362,7 +357,7 @@ namespace backend.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("Sku");
+                    b.HasIndex("GopSku");
 
                     b.HasIndex("UserId");
 
@@ -467,13 +462,13 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Purchase", b =>
                 {
                     b.HasOne("backend.Models.GamesOnPlatform", "Gop")
-                        .WithMany("Purchases")
-                        .HasForeignKey("Sku")
+                        .WithMany()
+                        .HasForeignKey("GopSku")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Models.User", "User")
-                        .WithMany("Purchases")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -486,13 +481,13 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Review", b =>
                 {
                     b.HasOne("backend.Models.GamesOnPlatform", "Gop")
-                        .WithMany("Reviews")
-                        .HasForeignKey("Sku")
+                        .WithMany()
+                        .HasForeignKey("GopSku")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("backend.Models.User", "User")
-                        .WithMany("Reviews")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -519,13 +514,6 @@ namespace backend.Migrations
                     b.Navigation("GamesOnPlatforms");
                 });
 
-            modelBuilder.Entity("backend.Models.GamesOnPlatform", b =>
-                {
-                    b.Navigation("Purchases");
-
-                    b.Navigation("Reviews");
-                });
-
             modelBuilder.Entity("backend.Models.Platform", b =>
                 {
                     b.Navigation("GamesOnPlatforms");
@@ -534,13 +522,6 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Publisher", b =>
                 {
                     b.Navigation("Games");
-                });
-
-            modelBuilder.Entity("backend.Models.User", b =>
-                {
-                    b.Navigation("Purchases");
-
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

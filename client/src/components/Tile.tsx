@@ -43,7 +43,7 @@ export default function Tile(props: P) {
                         )}
                     </div>
                 </div>
-                {quantity < 6 && (<div className="row bg-danger"> Hurry!!! Only {quantity} remaining </div>)}
+                {(quantity < 10) && (<div className="row bg-danger"> {quantity == 0 ? "Out of stock 😢" : `Hurry!!! Only ${quantity} remaining` } </div>)}
             </div>
             <div className="btn-group mb-2">
                 <Link className="btn btn-info" to={link} >
@@ -100,7 +100,7 @@ export function Info(props: Pick<P, 'price' | 'discount' | 'quantity' | 'logo' |
                         </div>
                     )}
                 </div>
-                {quantity < 6 && <div className="row bg-danger"> Hurry!!! Only {quantity} remaining </div>}
+                {(quantity < 10) && (<div className="row bg-danger"> {quantity == 0 ? "Out of stock 😢" : `Hurry!!! Only ${quantity} remaining` } </div>)}
             </div>
             <div className="btn-group mb-2">
                 {user ?
