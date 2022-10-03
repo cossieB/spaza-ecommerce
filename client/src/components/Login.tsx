@@ -5,7 +5,7 @@ import sendData from "../utils/sendData";
 import { FormInputString } from ".";
 import { User, UserContext } from "../types";
 import { login } from "../utils/loginout";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const initialState = {
     email: "",
@@ -19,6 +19,8 @@ export function Login() {
 
     const [state, dispatch] = useReducer(authReducer<LoginState>, initialState)
     const { user, setUser } = useContext(UserContext)!
+    const location = useLocation()
+    const navigate = useNavigate();
     
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault()

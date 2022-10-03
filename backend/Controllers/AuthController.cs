@@ -123,10 +123,17 @@ public class AuthController : ControllerBase {
         if (errors.errorCount > 0) {
             return BadRequest(new {errors = errors.errorList});
         }
-        
-        await this.db.SaveChangesAsync();
+        // await this.db.SaveChangesAsync();
 
         return Ok(new {message = "success"});
+    }
+    [HttpGet("purchases"), Authorize]
+    public async Task<IActionResult> Purchases() {
+        var user = await this.db.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier));
+        if (user == null) return Forbid("User not found");
+        var purchases = await this.db.Purchases.Where(p => p.UserId == user.UserId).ToListAsync();
+        var dto = purchases.Select(p => this.mapper.Map<PurchaseDto>(p));
+        return Ok(dto);
     }
     private string CreateToken(User user) {
         List<Claim> claims = new() {

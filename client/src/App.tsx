@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { User, UserContext } from './types';
 import { CartContextProvider, Nav } from './components';
-import { Home, Auth, ProductPage, Search, Cart } from './pages';
+import { Home, Auth, ProductPage, Search, Cart, Purchases } from './pages';
 
 function App() {
     const [user, setUser] = useState<User | null>(null)
@@ -24,6 +24,7 @@ function App() {
                         <Route path="/search" element={<Search />} />
                         <Route path='/auth' element={<Auth />} />
                         <Route path='/cart' element={<Cart />} />
+                        <Route path='/purchases' element={<Purchases />} />
                     </Routes>
                 </BrowserRouter>
             </CartContextProvider>

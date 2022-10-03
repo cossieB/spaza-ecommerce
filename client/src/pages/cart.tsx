@@ -14,7 +14,7 @@ export function Cart() {
     const { cart, cartDispatch } = useContext(CartContext)!
     const { user, setUser } = useContext(UserContext)!
     const [errors, setErrors] = useState<string[]>([])
-    const [mousedOver, setMousedOver] = useState<Hover>()  
+    const [mousedOver, setMousedOver] = useState<Hover>()
     const navigate = useNavigate()
 
     async function checkout() {
@@ -23,9 +23,7 @@ export function Cart() {
             errors: {
                 [sku: string]: string[]
             }
-        } | {
-
-        }
+        } | {}
         const response = await fetch(`${apiUrl}/auth/purchase`, {
             method: 'POST',
             body: JSON.stringify({ ...others, total: total.apply(cart) }),
@@ -36,7 +34,10 @@ export function Cart() {
         })
         if (response.status == 401) {
             logout(setUser)
-            navigate("/auth?type=login", {state: {message: "Your session expired please log in again."}})
+            navigate("/auth?type=login", { state: { 
+                message: "Your session expired please log in again." ,
+                redirect: "/cart"
+            } })
         }
         const data: ApiRes = await response.json()
 
@@ -51,9 +52,18 @@ export function Cart() {
                     elem.classList.remove("table-danger")
                 }, 5000)
             })
-            setErrors(errs)
+            return setErrors(errs)
         }
-        
+        if (response.ok) {
+            navigate("/purchases", {
+                state: {
+                    message: "Thank you for your purchase. Remember to rate your item."
+                }, 
+                replace: true
+            })
+            cartDispatch({ type: 'EMPTY_CART' })
+        }
+
     }
     return (
         <div className="container shadow-lg" >
@@ -72,9 +82,9 @@ export function Cart() {
                     <tbody>
                         {cart.items.map(item =>
                             <tr key={item.sku} id={item.sku} >
-                                <td 
-                                onMouseOver={e => setMousedOver({e, img: item.image})}
-                                onMouseOut={() => setMousedOver(undefined)}>
+                                <td
+                                    onMouseOver={e => setMousedOver({ e, img: item.image })}
+                                    onMouseOut={() => setMousedOver(undefined)}>
                                     {item.game}
                                 </td>
                                 <td>
@@ -136,8 +146,8 @@ export function Cart() {
 interface P {
     hover: Hover
 }
-function HoverComponent({hover}: P) {
-    const {e, img} = hover 
+function HoverComponent({ hover }: P) {
+    const { e, img } = hover
     const style: CSSProperties = {
         position: 'absolute',
         top: e.clientY + 50,

@@ -10,5 +10,6 @@ public class MapperConfig : Profile {
         CreateMap<Publisher, PublisherDTO>();
         CreateMap<Platform, PlatformDTO>();
         CreateMap<GamesOnPlatform, GopDTO>();
+        CreateMap<Purchase, PurchaseDto>();
     }
 }

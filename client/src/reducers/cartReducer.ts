@@ -12,6 +12,8 @@ export type CartAction = {
 } | {
     type: 'DECREMENT_ITEM' | 'REMOVE_ITEM',
     payload: string
+} | {
+    type: 'EMPTY_CART'
 }
 
 export function cartReducer(state: CartState, action: CartAction): CartState {
@@ -50,6 +52,9 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
 
         case 'REMOVE_ITEM':
             return { ...state, items: state.items.filter(i => i.sku != action.payload) }
+        
+        case 'EMPTY_CART':
+            return {...state, items: []}
         default:
             throw new Error("Unimplemented action")
     }

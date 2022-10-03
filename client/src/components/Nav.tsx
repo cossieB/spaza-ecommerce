@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { Game, UserContext } from "../types";
+import { logout } from "../utils/loginout";
 import { CartContext, Searchbar, SearchedGames } from "./";
 
 export function Nav() {
@@ -36,14 +37,13 @@ export function Nav() {
                                 <li className="nav-item dropdown" >
                                     <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">{user.displayName}</a>
                                     <ul className="dropdown-menu" style={{ zIndex: 99 }}>
-                                        <li><Link className="dropdown-item" to={''}>Purchases</Link></li>
+                                        <li><Link className="dropdown-item" to={'/purchases'}>Purchases</Link></li>
                                         <li><Link className="dropdown-item" to={''}>Reviews</Link></li>
                                         <li><hr className="dropdown-divider" /></li>
                                         <li>
                                             <div className="btn btn-danger"
                                                 onClick={() => {
-                                                    setUser(null);
-                                                    localStorage.removeItem('user');
+                                                    logout(setUser)
                                                 }}>
                                                 Logout
                                             </div>

@@ -10,11 +10,9 @@ interface Props {
     setGames: React.Dispatch<React.SetStateAction<Game[]>>
 }
 
-
-
 export function Searchbar({setGames}: Pick<Props, 'setGames'>) {
     
-    const navigator = useNavigate()
+    const navigate = useNavigate()
     const search = debounce(async (text: any) => {
         if (text == "") return;
         const data = await sendData(`${apiUrl}/search/autocomplete?text=${text}`)
@@ -28,7 +26,7 @@ export function Searchbar({setGames}: Pick<Props, 'setGames'>) {
                 const { value } = (document.getElementById('searchInput') as HTMLInputElement);
                 if (value == "") return;
                 (document.getElementById('searchInput') as HTMLInputElement).value = ""
-                navigator(`/search?s=${value}`)
+                navigate(`/search?s=${value}`)
             }}>
                 <input id="searchInput" onChange={(e) => {
                     search(e.target.value)
