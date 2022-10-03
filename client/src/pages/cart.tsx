@@ -1,11 +1,11 @@
-import { CSSProperties, useContext, useState } from "react"
+import { useContext, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { CartContext } from "../components"
+import { CartContext, CartHoverComponent } from "../components"
 import { apiUrl } from "../globalVariables"
 import { UserContext } from "../types"
 import { logout } from "../utils/loginout"
 
-type Hover = {
+export type CartHover = {
     e: React.MouseEvent<HTMLTableCellElement, MouseEvent>
     img: string
 }
@@ -14,7 +14,7 @@ export function Cart() {
     const { cart, cartDispatch } = useContext(CartContext)!
     const { user, setUser } = useContext(UserContext)!
     const [errors, setErrors] = useState<string[]>([])
-    const [mousedOver, setMousedOver] = useState<Hover>()
+    const [mousedOver, setMousedOver] = useState<CartHover>()
     const navigate = useNavigate()
 
     async function checkout() {
@@ -138,21 +138,8 @@ export function Cart() {
             <div  >
                 {errors.map(err => <p className="bg-danger" key={err}>{err}</p>)}
             </div>
-            {mousedOver && <HoverComponent hover={mousedOver} />}
+            {mousedOver && <CartHoverComponent hover={mousedOver} />}
         </div>
     )
 }
 
-interface P {
-    hover: Hover
-}
-function HoverComponent({ hover }: P) {
-    const { e, img } = hover
-    const style: CSSProperties = {
-        position: 'absolute',
-        top: e.clientY + 50,
-    }
-    return (
-        <img style={style} src={img} />
-    )
-}

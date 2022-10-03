@@ -9,8 +9,7 @@ export function formatDateForInputElement(date: Date) {
 
     return `${year}-${month}-${day}`;
 }
-export function formatDate(input: Date): string;
-export function formatDate(input: string): string
+
 export function formatDate(input: Date | string) {
     if (typeof input == 'string') {
         let date = new Date(input)

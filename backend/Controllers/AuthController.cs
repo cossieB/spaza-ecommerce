@@ -111,19 +111,20 @@ public class AuthController : ControllerBase {
                 PurchaseId = Guid.NewGuid(),
                 UserId = user.UserId,
                 Sku = item.gop.Sku,
-                Price = item.gop.Price,
-                Quantity = item.gop.Quantity,
-                Total = item.gop.Price * item.gop.Quantity
+                Price = clientSideItem.price,
+                Quantity = clientSideItem.quantity,
+                Total = clientSideItem.price * clientSideItem.quantity
             };
             
             this.db.Purchases.Add(purchase);
             var gopToUpdate = this.db.GamesOnPlatforms.FirstOrDefault(x => x.Sku == item.gop.Sku);
             gopToUpdate!.Quantity -= clientSideItem.quantity;
+            gopToUpdate!.LastUpdated = DateTime.Now;
         }
         if (errors.errorCount > 0) {
             return BadRequest(new {errors = errors.errorList});
         }
-        // await this.db.SaveChangesAsync();
+        await this.db.SaveChangesAsync();
 
         return Ok(new {message = "success"});
     }
@@ -131,8 +132,22 @@ public class AuthController : ControllerBase {
     public async Task<IActionResult> Purchases() {
         var user = await this.db.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier));
         if (user == null) return Forbid("User not found");
-        var purchases = await this.db.Purchases.Where(p => p.UserId == user.UserId).ToListAsync();
-        var dto = purchases.Select(p => this.mapper.Map<PurchaseDto>(p));
+        var query = from purchase in this.db.Purchases
+                    where purchase.UserId == user.UserId
+                    join gop in this.db.GamesOnPlatforms on purchase.Sku equals gop.Sku
+                    join game in this.db.Games on gop.GameId equals game.GameId
+                    join platform in this.db.Platforms on gop.PlatformId equals platform.PlatformId
+                    select new {purchase, gop, game, platform};
+        
+        var purchases = await query.ToListAsync();
+        var dto = purchases.Select(p => {
+            return new {
+                purchase = this.mapper.Map<PurchaseDto>(p.purchase),
+                game = this.mapper.Map<GameDTO>(p.game),
+                gop = this.mapper.Map<GopDTO>(p.gop),
+                platform = this.mapper.Map<PlatformDTO>(p.platform)
+            };
+        });
         return Ok(dto);
     }
     private string CreateToken(User user) {
