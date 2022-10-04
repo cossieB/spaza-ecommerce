@@ -25,8 +25,6 @@ public class AuthController : ControllerBase {
         this.mapper = mapper;
     }
 
-
-
     [HttpPost("register")]
     public async Task<IActionResult> Register(UserRegistrationDto request) {
         var errors = new Error();
@@ -48,12 +46,12 @@ public class AuthController : ControllerBase {
         user.PasswordSalt = salt;
         user.Email = request.email;
         user.DisplayName = request.displayName;
-        
+
         var trackedItem = this.db.Users.Add(user);
         await this.db.SaveChangesAsync();
         var id = trackedItem.Property(t => t.UserId).CurrentValue;
         var token = CreateToken(user);
-        
+
         return Ok(new { token, displayName = user.DisplayName, email = user.Email });
     }
 
@@ -73,10 +71,10 @@ public class AuthController : ControllerBase {
         var token = CreateToken(user);
         return Ok(new { token, displayName = user.DisplayName, email = user.Email });
     }
-    
+
     [HttpPost("purchase"), Authorize]
     public async Task<IActionResult> Purchase(Order order) {
-        
+
         var user = await this.db.Users.FirstOrDefaultAsync(x => x.UserId.ToString() == User.FindFirstValue(ClaimTypes.NameIdentifier));
         if (user == null) return Forbid("User not found");
 
@@ -84,19 +82,19 @@ public class AuthController : ControllerBase {
         var query = from gop in this.db.GamesOnPlatforms
                     join game in this.db.Games on gop.GameId equals game.GameId
                     join platform in this.db.Platforms on gop.PlatformId equals platform.PlatformId
-                    select new {gop, game, platform};
-        
+                    select new { gop, game, platform };
+
         var skus = order.items.Select(o => o.sku);
-        
+
         query = query.Where(item => skus.Contains(item.gop.Sku));   // Filter only for ordered games
-        var result = await query.ToListAsync();                     
+        var result = await query.ToListAsync();
 
         // find errors in the order
         var errors = new OrderError();
         foreach (var clientSideItem in order.items) {
             var item = result.FirstOrDefault(x => x.gop.Sku == clientSideItem.sku)!;
             if (clientSideItem == null) return Ok(new Error("is null"));
-            
+
             var temp = item.gop.Price * (1 - item.gop.Discount / 100);
             var price = Math.Round(temp, 2);
             if (item.gop.Price != price) {
@@ -115,18 +113,18 @@ public class AuthController : ControllerBase {
                 Quantity = clientSideItem.quantity,
                 Total = clientSideItem.price * clientSideItem.quantity
             };
-            
+
             this.db.Purchases.Add(purchase);
             var gopToUpdate = this.db.GamesOnPlatforms.FirstOrDefault(x => x.Sku == item.gop.Sku);
             gopToUpdate!.Quantity -= clientSideItem.quantity;
             gopToUpdate!.LastUpdated = DateTime.Now;
         }
         if (errors.errorCount > 0) {
-            return BadRequest(new {errors = errors.errorList});
+            return BadRequest(new { errors = errors.errorList });
         }
         await this.db.SaveChangesAsync();
 
-        return Ok(new {message = "success"});
+        return Ok(new { message = "success" });
     }
     [HttpGet("purchases"), Authorize]
     public async Task<IActionResult> Purchases() {
@@ -137,8 +135,8 @@ public class AuthController : ControllerBase {
                     join gop in this.db.GamesOnPlatforms on purchase.Sku equals gop.Sku
                     join game in this.db.Games on gop.GameId equals game.GameId
                     join platform in this.db.Platforms on gop.PlatformId equals platform.PlatformId
-                    select new {purchase, gop, game, platform};
-        
+                    select new { purchase, gop, game, platform };
+
         var purchases = await query.ToListAsync();
         var dto = purchases.Select(p => {
             return new {
@@ -149,6 +147,36 @@ public class AuthController : ControllerBase {
             };
         });
         return Ok(dto);
+    }
+
+    [HttpPost("rate"), Authorize]
+    public async Task<IActionResult> Rate(Rating request) {
+        if (request.rating < 1 || request.rating > 5) return BadRequest(new Error("Illegal rating"));
+
+        Guid userId;
+        if (Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId) == false) return BadRequest(new Error("Invalid sku"));
+
+        var previousReview = await this.db.Reviews.FirstOrDefaultAsync(rev => rev.UserId == userId && rev.Sku == request.sku);
+
+        if (previousReview != null) {
+            previousReview.Content = request.review;
+            previousReview.DateEdited = DateTime.UtcNow;
+            previousReview.Rating = request.rating;
+
+            await this.db.SaveChangesAsync();
+            return Ok();
+        }
+
+        var review = new Review {
+            Content = request.review,
+            Sku = request.sku,
+            Rating = request.rating,
+            ReviewId = Guid.NewGuid(),
+            UserId = userId
+        };
+        this.db.Reviews.Add(review);
+        await this.db.SaveChangesAsync();
+        return Ok();
     }
     private string CreateToken(User user) {
         List<Claim> claims = new() {
