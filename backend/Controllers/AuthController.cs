@@ -148,36 +148,6 @@ public class AuthController : ControllerBase {
         });
         return Ok(dto);
     }
-
-    [HttpPost("rate"), Authorize]
-    public async Task<IActionResult> Rate(Rating request) {
-        if (request.rating < 1 || request.rating > 5) return BadRequest(new Error("Illegal rating"));
-
-        Guid userId;
-        if (Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId) == false) return BadRequest(new Error("Invalid sku"));
-
-        var previousReview = await this.db.Reviews.FirstOrDefaultAsync(rev => rev.UserId == userId && rev.Sku == request.sku);
-
-        if (previousReview != null) {
-            previousReview.Content = request.review;
-            previousReview.DateEdited = DateTime.UtcNow;
-            previousReview.Rating = request.rating;
-
-            await this.db.SaveChangesAsync();
-            return Ok();
-        }
-
-        var review = new Review {
-            Content = request.review,
-            Sku = request.sku,
-            Rating = request.rating,
-            ReviewId = Guid.NewGuid(),
-            UserId = userId
-        };
-        this.db.Reviews.Add(review);
-        await this.db.SaveChangesAsync();
-        return Ok();
-    }
     private string CreateToken(User user) {
         List<Claim> claims = new() {
             new Claim(ClaimTypes.Email, user.Email),
