@@ -53,8 +53,8 @@ public class ReviewsController : ControllerBase {
         await this.db.SaveChangesAsync();
         return Ok();
     }
-    [HttpGet("review"), Authorize]
-    public async Task<IActionResult> GetReview([FromQuery] Guid sku) {
+    [HttpGet("review/sku/{sku}"), Authorize]
+    public async Task<IActionResult> GetReview(Guid sku) {
         Guid userId;
         if (Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out userId) == false) return BadRequest(new Error("Invalid user"));
 
@@ -65,5 +65,24 @@ public class ReviewsController : ControllerBase {
             content = review.Content,
             rating = review.Rating
         });
+    }
+    [HttpGet("{sku}")]
+    public async Task<IActionResult> GetAllReviews(Guid sku) {
+
+        var query = from review in this.db.Reviews
+                    join user in this.db.Users on review.UserId equals user.UserId
+                    where review.Sku == sku
+                    select new {user, review};
+
+        var reviews = await query.ToListAsync();
+        
+        var response = reviews.Select(rev => new {
+            user = rev.user.DisplayName,
+            content = rev.review.Content,
+            dateCreated = rev.review.DateCreated,
+            dateEdited = rev.review.DateEdited,
+            rating = rev.review.Rating
+        });
+        return Ok(response);
     }
 }

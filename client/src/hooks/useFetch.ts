@@ -10,10 +10,10 @@ export function useFetch<T  = any >(
     dependencyArray: React.DependencyList = [] ): T  | undefined {
     const [data, setData] = useState<T>()
     useEffect(() => {
+        setLoading(true)
         getData<T>(url, setLoading)
             .then(res => setData(res))
             .catch(e => {
-                
                 setError && setError(e.code)
             })
     }, dependencyArray)

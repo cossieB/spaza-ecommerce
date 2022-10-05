@@ -12,7 +12,6 @@ public partial class Platform {
     public string Logo { get; set; } = null!;
     public string Summary { get; set; } = null!;
     public DateTime Release { get; set; }
-
     public virtual ICollection<GamesOnPlatform> GamesOnPlatforms { get; set; }
 }
 

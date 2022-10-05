@@ -27,8 +27,10 @@ export function Review({ toReview }: P) {
     const navigate = useNavigate()
 
     useEffect(() => {
+        setLoading(true);
         (async function () {
-            const response = await fetch(`${apiUrl}/reviews/review?sku=${toReview.sku}`, {
+            if (toReview.sku == "") return;
+            const response = await fetch(`${apiUrl}/reviews/review/sku/${toReview.sku}`, {
                 headers: {
                     Authorization: `Bearer ${user?.token}`
                 }
@@ -91,34 +93,40 @@ export function Review({ toReview }: P) {
         const feedbackDiv = document.getElementById('reviewFeedback') as HTMLDivElement
         feedbackDiv.className = feedback.className + " text-white"
         feedbackDiv.innerText = feedback.message
+        setTimeout(() => {
+            feedbackDiv.className = ""
+            feedbackDiv.innerText = ""
+        }, 2500)
     }
     return (
-        <Loader isLoading={loading} >
-            <div className="offcanvas offcanvas-start text-dark" data-bs-backdrop="static" tabIndex={-1} id="staticBackdrop" aria-labelledby="staticBackdropLabel">
-                <div className="offcanvas-header">
-                    <h5 className="offcanvas-title" id="staticBackdropLabel"> {toReview.title} </h5>
-                    <small> {toReview.platform} </small>
-                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div className="offcanvas-body">
-                    <form onSubmit={handleSubmit}>
-                        {[...Array(5)].map((_v, i) => i + 1).map(elem => <Star key={elem} rating={rating} value={elem} setRating={setRating} />)}
-                        <div>
-                            <label htmlFor="reviewText">Review</label>
-                            <textarea className="form-control" name="reviewText" id="reviewText" value={content} onChange={e => setContent(e.target.value)} rows={10} maxLength={200} />
-                        </div>
-                        <div>
-                            <label htmlFor="reviewName">Name</label>
-                            <input type="text" className="form-control" readOnly value={user?.displayName} />
-                        </div>
-                        <div id="reviewFeedback" />
-                        <button className="btn btn-success" disabled={rating == 0} type="submit">
-                            {rating ? "Submit" : "Please give a rating"}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </Loader>
+        <div className="offcanvas offcanvas-start text-dark" data-bs-backdrop="static" tabIndex={-1} id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+            <Loader isLoading={loading} >
+                <>
+                    <div className="offcanvas-header">
+                        <h5 className="offcanvas-title" id="staticBackdropLabel"> {toReview.title} </h5>
+                        <small> {toReview.platform} </small>
+                        <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div className="offcanvas-body">
+                        <form onSubmit={handleSubmit}>
+                            {[...Array(5)].map((_v, i) => i + 1).map(elem => <Star key={elem} rating={rating} value={elem} setRating={setRating} />)}
+                            <div>
+                                <label htmlFor="reviewText">Review</label>
+                                <textarea className="form-control" name="reviewText" id="reviewText" value={content} onChange={e => setContent(e.target.value)} rows={10} maxLength={200} />
+                            </div>
+                            <div>
+                                <label htmlFor="reviewName">Name</label>
+                                <input type="text" className="form-control" readOnly value={user?.displayName} />
+                            </div>
+                            <div id="reviewFeedback" />
+                            <button className="btn btn-success" disabled={rating == 0} type="submit">
+                                {rating ? "Submit" : "Please give a rating"}
+                            </button>
+                        </form>
+                    </div>
+                </>
+            </Loader>
+        </div>
     )
 }
 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom"
 import { NotFound, ServerError } from "../components/Errors"
-import {Loader} from "../components"
-import {OtherSkus} from "../components"
+import { Loader, Reviews } from "../components"
+import { OtherSkus } from "../components"
 import { Info } from "../components/Tile"
 import { apiUrl } from "../globalVariables"
 import { Game, Platform, Gop, Developer, Publisher } from "../types"
@@ -25,28 +25,24 @@ export function ProductPage() {
 
     const [data, setData] = useState<Data>();
     useEffect(() => {
-        (async function() {
+        (async function () {
             try {
                 if (sku != null) {
                     const response = await getData<Data>(`${apiUrl}/products/${sku}`, setLoading)
                     setData(response)
                 }
                 else {
-                    const q1 = await  getData(`${apiUrl}/games/${id}/platforms`, setLoading); 
-                    const response = await getData<Data>(`${apiUrl}/products/${q1[0].sku}`, setLoading)
-                    setQuery(`sku=${q1[0].sku}`)
+                    const query = await getData(`${apiUrl}/games/${id}/platforms`, setLoading);
+                    const response = await getData<Data>(`${apiUrl}/products/${query[0].sku}`, setLoading)
+                    setQuery(`sku=${query[0].sku}`)
                     setData(response)
                 }
-            } 
+            }
             catch (e: any) {
-                setError(e.code)    
+                setError(e.code)
             }
         })()
     }, [sku])
-
-    function handleClick() {
-
-    }
 
     return (
         <div className="container shadow-lg" >
@@ -61,7 +57,7 @@ export function ProductPage() {
                         <div className="row">
                             {/* Cover image */}
                             {<img src={data?.game.cover} className="img-thumnail col" alt="" />}
-                            
+
                             <div className="col d-flex justify-content-center align-items-center">
                                 <Info
                                     discount={data?.gop.discount || 0}
@@ -86,6 +82,8 @@ export function ProductPage() {
                         </div>
                         <h2>Trailer</h2>
                         <div className="W-100" dangerouslySetInnerHTML={{ __html: data?.game.trailer || "" }} ></div>
+                        <h2> Reviews </h2>
+                        <Reviews />
                     </>
                 </Loader>
             }
