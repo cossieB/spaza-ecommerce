@@ -3,6 +3,6 @@ export type Developer = Record<
 'headquarters' | 
 'logo' |
 'name' |
-'publisherId' |
+'developerId' |
 'summary'
 , string>

@@ -72,17 +72,16 @@ public class ReviewsController : ControllerBase {
         var query = from review in this.db.Reviews
                     join user in this.db.Users on review.UserId equals user.UserId
                     where review.Sku == sku
-                    select new {user, review};
+                    select new {
+                        user = user.DisplayName,
+                        content = review.Content,
+                        dateCreated = review.DateCreated,
+                        dateEdited = review.DateEdited,
+                        rating = review.Rating
+                    };
 
         var reviews = await query.ToListAsync();
-        
-        var response = reviews.Select(rev => new {
-            user = rev.user.DisplayName,
-            content = rev.review.Content,
-            dateCreated = rev.review.DateCreated,
-            dateEdited = rev.review.DateEdited,
-            rating = rev.review.Rating
-        });
-        return Ok(response);
+
+        return Ok(reviews);
     }
 }

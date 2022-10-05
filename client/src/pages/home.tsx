@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import {Loader} from "../components";
+import { Loader, LogoLink } from "../components";
 import Tile from "../components/Tile"
 import { apiUrl } from "../globalVariables";
 import { useFetch } from "../hooks";
-import { Game, Gop } from "../types";
+import { Developer, Game, Gop, Publisher } from "../types";
 import { Platform } from "../types/Platform";
 
 type Data = {
@@ -14,7 +14,11 @@ type Data = {
 
 export function Home() {
     const [loading, setLoading] = useState(true);
+    const [devsLoading, setDevsLoading] = useState(true);
+    const [pubsLoading, setPubsLoading] = useState(true);
     const response = useFetch<Data[]>(`${apiUrl}/products?limit=12`, setLoading)
+    const developers = useFetch<Developer[]>(`${apiUrl}/developers?limit=12`, setDevsLoading)
+    const publishers = useFetch<Publisher[]>(`${apiUrl}/publishers?limit=12`, setPubsLoading)
     return (
         <div className="container shadow-lg" >
             <h1>Spaza Game Store</h1>
@@ -41,9 +45,18 @@ export function Home() {
                     )}
                 </div>
             </Loader>
-            <h2> Developers </h2>
-
-            <h2>Publishers</h2>
+            <Loader isLoading={devsLoading}>
+                <>
+                    <h2> Developers </h2>
+                    {developers?.map(dev => <LogoLink key={dev.developerId} link={`/developers/${dev.developerId}`} logo={dev.logo} />)}
+                </>
+            </Loader>
+            <Loader isLoading={devsLoading}>
+                <>
+                    <h2> Publishers </h2>
+                    {publishers?.map(pub => <LogoLink key={pub.publisherId} link={`/publishers/${pub.publisherId}`} logo={pub.logo} />)}
+                </>
+            </Loader>
         </div>
     )
 }

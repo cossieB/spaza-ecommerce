@@ -3,6 +3,6 @@ export type Publisher = Record<
 'location' | 
 'logo' |
 'name' |
-'developerId' |
+'publisherId' |
 'summary'
 , string>
