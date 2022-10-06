@@ -24,11 +24,11 @@ export function Nav() {
 
                             <li className="nav-item dropdown">
                                 <Link className="nav-link dropdown-toggle" to={''} role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Dropdown
+                                    Quick Links
                                 </Link>
                                 <ul className="dropdown-menu">
-                                    <li><Link className="dropdown-item" to={''}>Action</Link></li>
-                                    <li><Link className="dropdown-item" to={''}>Another action</Link></li>
+                                    <li><a className="dropdown-item" target="_blank" href="https://internet-games-database.vercel.app/" >IGDB</a></li>
+                                    <li><a className="dropdown-item" target="_blank" href="https://mememachine.vercel.app/">Meme Machine</a></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     <li><a className="dropdown-item" href="http://cossie-91.web.app" rel="noreferrer" target="_blank" >About Me</a></li>
                                 </ul>
