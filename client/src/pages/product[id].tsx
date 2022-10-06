@@ -51,8 +51,8 @@ export function ProductPage() {
                     <>
                         <h1 className="col-12" > {data?.game.title} </h1>
                         <div className="row">
-                            <Link className="col link-dark" to={`/developers/${data?.game.developerId}`}>{data?.developer.name}</Link>
-                            <Link className="col link-dark" to={`/publishers/${data?.game.publisherId}`}>{data?.publisher.name}</Link>
+                            <Link className="col link-info" to={`/developers/${data?.game.developerId}`}>{data?.developer.name}</Link>
+                            <Link className="col link-info" to={`/publishers/${data?.game.publisherId}`}>{data?.publisher.name}</Link>
                         </div>
                         <div className="row">
                             {/* Cover image */}

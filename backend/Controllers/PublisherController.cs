@@ -21,7 +21,7 @@ public class PublisherController : ControllerBase {
         return Ok(await this.db.Publishers.Take(limit).ToListAsync());
     }
     [HttpGet("{uuid}")]
-    public async Task<IActionResult> GetPublisher(Guid uuid) {
+    public async Task<IActionResult> GetPublisher(Guid uuid, [FromQuery] int? page) {
         var pub = await this.db.Publishers.FirstOrDefaultAsync(item => item.PublisherId == uuid);
         if (pub == null) return NotFound();
         
@@ -29,9 +29,11 @@ public class PublisherController : ControllerBase {
                     join pform in this.db.Platforms on gop.PlatformId equals pform.PlatformId
                     join game in this.db.Games on gop.GameId equals game.GameId
                     where game.PublisherId == uuid
-                    orderby gop.Discount descending
+                    orderby gop.Discount descending, gop.Quantity, gop.Sku
                     select new { gop, pform, game };
-        var gamesList = await query.ToListAsync();
+        
+        var count = await query.CountAsync();
+        var gamesList = await query.Skip(page * 12 ?? 0).Take(12).ToListAsync();
 
         var games = gamesList.Select(g => {
             return new {
@@ -43,7 +45,8 @@ public class PublisherController : ControllerBase {
 
         return Ok(new {
             item = this.mapper.Map<PublisherDTO>(pub),
-            games
+            games,
+            count
         });
     }
 }

@@ -21,7 +21,7 @@ public class DeveloperController : ControllerBase {
         return Ok(await this.db.Developers.Take(limit).ToListAsync());
     }
     [HttpGet("{uuid}")]
-    public async Task<IActionResult> GetDeveloper(Guid uuid) {
+    public async Task<IActionResult> GetDeveloper(Guid uuid, [FromQuery] int page) {
         var dev = await this.db.Developers.FirstOrDefaultAsync(item => item.DeveloperId == uuid);
         if (dev == null) return NotFound();
 
@@ -29,9 +29,11 @@ public class DeveloperController : ControllerBase {
                     join pform in this.db.Platforms on gop.PlatformId equals pform.PlatformId
                     join game in this.db.Games on gop.GameId equals game.GameId
                     where game.DeveloperId == uuid
-                    orderby gop.Discount descending
+                    orderby gop.Discount descending, gop.Quantity, gop.Sku
                     select new { gop, pform, game };
-        var gamesList = await query.ToListAsync();
+
+        var count = await query.CountAsync();
+        var gamesList = await query.Skip(page * 12).Take(12).ToListAsync();
 
         var games = gamesList.Select(g => {
             return new {
@@ -43,7 +45,8 @@ public class DeveloperController : ControllerBase {
 
         return Ok(new {
             item = this.mapper.Map<DeveloperDTO>(dev),
-            games
+            games,
+            count
         });
     }
 }

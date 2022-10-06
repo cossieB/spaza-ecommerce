@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useParams } from "react-router-dom"
-import { Loader } from "../components"
+import { Loader, Pagination } from "../components"
 import Tile from "../components/Tile"
 import { apiUrl } from "../globalVariables"
 import { useFetch } from "../hooks"
@@ -17,18 +17,20 @@ type P = {
 
 export function Company({ type }: P) {
     const { id } = useParams()
-    const url = type == 'dev' ? `${apiUrl}/developers/${id}` : `${apiUrl}/publishers/${id}`;
     const [loading, setLoading] = useState(true)
+    const [page, setPage] = useState(0)
+    const url = type == 'dev' ? `${apiUrl}/developers/${id}?page=${page}` : `${apiUrl}/publishers/${id}?page=${page}`;
 
     type Data = {
         item: Mapper[typeof type]
+        count: number
         games: {
             game: Game
             platform: Platform
             gop: Gop
         }[]
     }
-    const response = useFetch<Data>(url, setLoading, [type, id])
+    const response = useFetch<Data>(url, setLoading, [page])
 
     return (
         <div className="container shadow-lg">
@@ -62,6 +64,7 @@ export function Company({ type }: P) {
                     </div>
                 </>
             </Loader>
+            <Pagination page={page} setPage={setPage} maxPage={Math.floor((response?.count || 0) / 12 )} />
         </div>
     )
 }
