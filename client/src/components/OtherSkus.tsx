@@ -20,7 +20,7 @@ export function OtherSkus({ platformIdToExclude }: P) {
     const [error, setError] = useState(0)
     const [query, setQuery] = useSearchParams();
     const sku = query.get('sku')
-    const response = useFetch<Data[]>(`${apiUrl}/games/${gameId}/platforms`, setLoading, setError, [sku])
+    const response = useFetch<Data[]>(`${apiUrl}/games/${gameId}/platforms`, setLoading, [sku], setError)
     return (
         <Loader isLoading={loading}>
             <div>

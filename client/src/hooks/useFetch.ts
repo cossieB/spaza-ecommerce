@@ -6,8 +6,8 @@ type FetchError = {errors: string[]}
 export function useFetch<T  = any >(
     url: string, 
     setLoading: React.Dispatch<React.SetStateAction<boolean>> ,
-    setError?: React.Dispatch<React.SetStateAction<number>>,
-    dependencyArray: React.DependencyList = [] ): T  | undefined {
+    dependencyArray: React.DependencyList = [] ,
+    setError?: React.Dispatch<React.SetStateAction<number>>): T  | undefined {
     const [data, setData] = useState<T>()
     useEffect(() => {
         setLoading(true)

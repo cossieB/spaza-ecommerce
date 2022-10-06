@@ -18,10 +18,9 @@ interface P {
 export function SearchSettings({ setData }: P) {
     const [_platformsLoading, setPlatformsLoading] = useState(true);
     const [maxPrice, setMaxPrice] = useState(60)
-
     const [searchParams] = useSearchParams()
     const s = searchParams.get('s')
-    let searhValue = "";
+
     useEffect(() => {
         (document.getElementById("searchName") as HTMLInputElement).value = s || ""
     }, [s])

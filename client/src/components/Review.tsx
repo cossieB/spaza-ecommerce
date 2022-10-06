@@ -1,9 +1,7 @@
 import React, { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../globalVariables";
-import { useFetch } from "../hooks";
 import { UserContext } from "../types"
-import sendData from "../utils/sendData";
 import { Loader } from "./Loader";
 
 interface P {

@@ -24,7 +24,7 @@ public class ProductsController : ControllerBase {
                     join game in this.db.Games on gop.GameId equals game.GameId
                     orderby gop.Sku
                     select new { gop, pform, game };
-        var games = await query.ToListAsync();
+        var games = await query.Take(limit ?? 100).ToListAsync();
 
         var obj = games.Select(g => {
             return new {
@@ -32,7 +32,7 @@ public class ProductsController : ControllerBase {
                 platform = this.mapper.Map<PlatformDTO>(g.pform),
                 gop = this.mapper.Map<GopDTO>(g.gop),
             };
-        }).Take(12);
+        });
 
         return Ok(obj);
     }

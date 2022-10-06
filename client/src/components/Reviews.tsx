@@ -17,7 +17,7 @@ export function Reviews() {
     const [loading, setLoading] = useState(true)
     const [query] = useSearchParams()
     const sku = query.get('sku')
-    const response = useFetch<Data[]>(`${apiUrl}/reviews/${sku}`, setLoading, undefined, [sku])
+    const response = useFetch<Data[]>(`${apiUrl}/reviews/${sku}`, setLoading, [sku])
 
     return (
         <Loader isLoading={loading}>
